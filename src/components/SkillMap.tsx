@@ -1,4 +1,3 @@
-import React from "react";
 import { useSkills, type SkillCategory, type SkillNode } from "../store/useSkills";
 import { Card, Row, Col, Badge } from "react-bootstrap";
 

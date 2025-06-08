@@ -66,3 +66,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.user-info img {
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+

@@ -8,17 +8,18 @@ const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 <React.StrictMode>
-  <Auth0Provider
-    domain={domain}
-    clientId={clientId}
-    authorizationParams={{
-      redirect_uri: window.location.origin,
-      audience: 'https://api.stackmap.dev', // Add your API identifier here
-      scope: 'read:skills write:skills', // Optional, based on your API scopes
-    }}
-  >
-    <App />
-  </Auth0Provider>
+<Auth0Provider
+  domain={domain}
+  clientId={clientId}
+  authorizationParams={{
+    redirect_uri: window.location.origin,
+    audience: 'https://api.stackmap.dev',
+    scope: 'openid profile email read:skills write:skills delete:skills',
+  }}
+>
+  <App />
+</Auth0Provider>
+
 </React.StrictMode>
 
 );

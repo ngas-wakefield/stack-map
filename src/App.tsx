@@ -1,15 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Container, Row, Col, Navbar, Nav } from "react-bootstrap";
+import { Container, Row, Col, Navbar, Image } from "react-bootstrap";
 import { ThemeSwitcher } from "./components/ThemeSwitcher";
 import { SkillList } from "./components/SkillList";
 import { SkillMap } from "./components/SkillMap";
-import AuthButtons from "./components/AuthButtons"; // import the auth buttons component
+import AuthButtons from "./components/AuthButtons";
 import { useAuth0 } from "@auth0/auth0-react";
-import GetTokenButton from './components/TestButton';
 
 export function App() {
   const { user, isAuthenticated } = useAuth0();
+
+  console.log("User object:", user); // For debugging
+console.log("Auth0 user:", user);
 
   return (
     <>
@@ -18,17 +20,17 @@ export function App() {
           <Navbar.Brand>🗺️ Stack Map</Navbar.Brand>
 
           <div className="d-flex align-items-center gap-3">
-            {isAuthenticated && user && (
-              <div className="d-flex align-items-center text-white gap-2">
-                <img
+            {isAuthenticated && user && user.picture && user.name && (
+              <Navbar.Text className="d-flex align-items-center gap-2 text-white">
+                <Image
                   src={user.picture}
                   alt={user.name}
-                  width="32"
-                  height="32"
-                  style={{ borderRadius: "50%" }}
+                  width={32}
+                  height={32}
+                  roundedCircle
                 />
                 <span>{user.name}</span>
-              </div>
+              </Navbar.Text>
             )}
             <ThemeSwitcher />
             <AuthButtons />
@@ -43,7 +45,6 @@ export function App() {
           </Col>
           <Col md={8}>
             <SkillMap />
-            <GetTokenButton />
           </Col>
         </Row>
       </Container>

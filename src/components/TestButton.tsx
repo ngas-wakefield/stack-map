@@ -1,14 +1,26 @@
-import { useAuth0 } from '@auth0/auth0-react';
 
-function GetTokenButton() {
-  const { getAccessTokenSilently } = useAuth0();
+import { useAuth0, type GetTokenSilentlyOptions } from '@auth0/auth0-react'
 
-  const handleClick = async () => {
-    const token = await getAccessTokenSilently();
-    console.log("Access Token:", token); // Copy this into Postman
-  };
-
-  return <button onClick={handleClick}>Get Access Token</button>;
+interface MyTokenOptions extends GetTokenSilentlyOptions {
+  audience?: string
+  scope?: string
 }
 
-export default GetTokenButton
+export default function GetTokenButton() {
+  const { getAccessTokenSilently } = useAuth0()
+
+  const handleClick = async () => {
+    try {
+      const options: MyTokenOptions = {
+        audience: 'https://api.stackmap.dev',
+        scope: 'read:skills write:skills delete:skills',
+      }
+      const token = await getAccessTokenSilently(options)
+      console.log('Access Token:', token)
+    } catch (e) {
+      console.error('Error getting token:', e)
+    }
+  }
+
+  return <button onClick={handleClick}>Get Access Token</button>
+}

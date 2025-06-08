@@ -1,19 +1,32 @@
 import express from 'express'
 import Skill from '../models/Skill.js'
-import checkJwt from '../middleware/auth.js'
+import { checkJwt, checkScopes } from '../middleware/auth.js'
 
 const router = express.Router()
 
-// Create a new skill (userId is set from the token, not from client)
-router.post('/', checkJwt, async (req, res) => {
-  console.log('req.user:', req.user) // 👈 DEBUG THIS
+// GET skills for user - requires read:skills scope
+router.get(
+  '/:userId',
+  checkJwt,
+  checkScopes(['read:skills']),
+  async (req, res) => {
+    if (req.auth.sub !== req.params.userId) {
+      return res.status(403).json({ message: 'Unauthorized' })
+    }
 
-  if (!req.user) {
-    return res.status(401).json({ message: 'No user info found in token.' })
+    try {
+      const skills = await Skill.find({ userId: req.params.userId })
+      res.json(skills)
+    } catch (err) {
+      res.status(500).json({ message: err.message })
+    }
   }
+)
 
+// POST new skill - requires write:skills scope
+router.post('/', checkJwt, checkScopes(['write:skills']), async (req, res) => {
   const skill = new Skill({
-    userId: req.user.sub,
+    userId: req.auth.sub, // ✅ updated
     skillName: req.body.skillName,
     category: req.body.category,
     level: req.body.level,
@@ -27,17 +40,17 @@ router.post('/', checkJwt, async (req, res) => {
   }
 })
 
-// Get all skills by userId (user must be authenticated and can only get their own skills)
-router.get('/:userId', checkJwt, async (req, res) => {
-  if (req.user.sub !== req.params.userId) {
-    return res.status(403).json({ message: 'Unauthorized' })
-  }
-
+// DELETE skill by id - requires delete:skills scope
+router.delete('/:id', async (req, res) => {
   try {
-    const skills = await Skill.find({ userId: req.params.userId })
-    res.json(skills)
+    const deletedSkill = await Skill.findByIdAndDelete(req.params.id)
+    if (!deletedSkill) {
+      return res.status(404).send('Skill not found')
+    }
+    res.json({ message: 'Skill deleted' })
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    console.error('Delete error:', err)
+    res.status(500).send('Server error')
   }
 })
 
