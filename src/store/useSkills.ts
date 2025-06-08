@@ -154,34 +154,46 @@ export const useSkills = create<SkillStore>((set) => ({
     }
   },
 
-  fetchSkills: async (
-    getToken: () => Promise<string>
-  ): Promise<void> => {
-    try {
-      const token = await getToken();
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const userId = payload.sub;
+fetchSkills: async (getToken: () => Promise<string>): Promise<void> => {
+  try {
+    const token = await getToken();
 
-      const res = await fetch(`${FULL_API_URL}/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const userId = payload.sub;
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed to fetch skills: ${res.status} ${errorText}`);
-      }
+    const res = await fetch(`${FULL_API_URL}/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const skillsFromBackend: SkillNodeFromBackend[] = await res.json();
-
-      set({
-        skills: skillsFromBackend.map((s) => ({
-          ...formatSkill(s),
-          category: s.category.toLowerCase() as SkillCategory, // ensure valid enum
-        })),
-      });
-    } catch (error) {
-      console.error("fetchSkills error:", error);
-      throw error;
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch skills: ${res.status} ${errorText}`);
     }
-  },
+
+    const skillsFromBackend: SkillNodeFromBackend[] = await res.json();
+
+    set({
+      skills: skillsFromBackend.map((s) => ({
+        ...formatSkill(s),
+        category: s.category.toLowerCase() as SkillCategory,
+      })),
+    });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // Only suppress "login required" errors
+    if (
+      error.error === "login_required" || // Auth0 error shape sometimes
+      (error.message && error.message.toLowerCase().includes("login required"))
+    ) {
+      // User not logged in, clear skills or do nothing
+      set({ skills: [] });
+
+      return;
+    }
+    
+    console.error("fetchSkills error:", error);
+    throw error; // rethrow others
+  }
+},
+
 }));

@@ -12,7 +12,8 @@ export function SkillList() {
   const removeSkill = useSkills((state) => state.removeSkill);
   const fetchSkills = useSkills((state) => state.fetchSkills);
 
-  const { getAccessTokenSilently } = useAuth0();
+const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState<SkillCategory>("frontend");
@@ -55,67 +56,77 @@ export function SkillList() {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleAdd();
-        }}
-      >
-        <Form.Group className="mb-2" controlId="skillName">
-          <Form.Control
-            type="text"
-            placeholder="Skill name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={loading}
-          />
-        </Form.Group>
+<Form
+  onSubmit={(e) => {
+    e.preventDefault();
+    handleAdd();
+  }}
+>
+  <Form.Group className="mb-2" controlId="skillName">
+    <Form.Control
+      type="text"
+      placeholder="Skill name"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      disabled={loading || !isAuthenticated}
+    />
+  </Form.Group>
 
-        <Form.Group className="mb-2" controlId="skillCategory">
-          <Form.Select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as SkillCategory)}
-            disabled={loading}
-          >
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c.charAt(0).toUpperCase() + c.slice(1)}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+  <Form.Group className="mb-2" controlId="skillCategory">
+    <Form.Select
+      value={category}
+      onChange={(e) => setCategory(e.target.value as SkillCategory)}
+      disabled={loading || !isAuthenticated}
+    >
+      {categories.map((c) => (
+        <option key={c} value={c}>
+          {c.charAt(0).toUpperCase() + c.slice(1)}
+        </option>
+      ))}
+    </Form.Select>
+  </Form.Group>
 
-        <Form.Group className="mb-3" controlId="skillLevel">
-          <Form.Label>Level: {level}</Form.Label>
-          <Form.Range
-            min={1}
-            max={5}
-            value={level}
-            onChange={(e) => setLevel(Number(e.target.value))}
-            disabled={loading}
-          />
-        </Form.Group>
+  <Form.Group className="mb-3" controlId="skillLevel">
+    <Form.Label>Level: {level}</Form.Label>
+    <Form.Range
+      min={1}
+      max={5}
+      value={level}
+      onChange={(e) => setLevel(Number(e.target.value))}
+      disabled={loading || !isAuthenticated}
+    />
+  </Form.Group>
 
-        <Button type="submit" variant="primary" size="sm" className="mb-3" disabled={loading}>
-          {loading ? (
-            <>
-              <Spinner animation="border" size="sm" /> Adding...
-            </>
-          ) : (
-            "Add Skill"
-          )}
-        </Button>
-      </Form>
+  <Button
+    type="submit"
+    variant="primary"
+    size="sm"
+    className="mb-3"
+    disabled={loading || !isAuthenticated}
+  >
+    {loading ? (
+      <>
+        <Spinner animation="border" size="sm" /> Adding...
+      </>
+    ) : (
+      "Add Skill"
+    )}
+  </Button>
+
+{!isAuthenticated && (
+  <Alert variant="info">
+    Log in to see and save your skills!
+  </Alert>
+)}
+
+</Form>
+
 
       {loading && (
         <div className="text-center my-3">
           <Spinner animation="border" role="status" />
           <div>Loading skills...</div>
         </div>
-      )}
-
-      {!loading && !error && skills.length === 0 && (
-        <Alert variant="info">You haven't added any skills yet. Start by adding one above! <br></br>Log in to keep your skills saved.</Alert>
       )}
 
       {!loading && !error && skills.length > 0 && (
