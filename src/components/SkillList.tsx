@@ -91,14 +91,15 @@ export function SkillList() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="skillLevel">
-          <Form.Label>Level: {level}</Form.Label>
+          <Form.Label>Years XP: {level}</Form.Label>
           <Form.Range
-            min={1}
-            max={5}
+            min={0}        
+            max={30}       
+            step={0.5}     
             value={level}
             onChange={(e) => setLevel(Number(e.target.value))}
-            disabled={loading || !isAuthenticated}
           />
+
         </Form.Group>
 
         <Button
@@ -138,7 +139,7 @@ export function SkillList() {
             >
               <div>
                 {name} <Badge bg="secondary">{category}</Badge>{" "}
-                <small>Lvl {level}</small>
+                <small> {level}</small>
               </div>
               {isAuthenticated && (
                 <Button

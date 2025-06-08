@@ -67,7 +67,7 @@ export function SkillMap() {
                 <Card>
                   <Card.Body>
                     <Card.Title>{name}</Card.Title>
-                    <Card.Text>Level: {level}</Card.Text>
+                    <Card.Text>{level} YOE</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
