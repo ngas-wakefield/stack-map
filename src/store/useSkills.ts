@@ -19,6 +19,8 @@ export type SkillNodeFromBackend = {
 
 type SkillStore = {
   skills: SkillNode[];
+  isLoading: boolean;
+
   setSkills: (skills: SkillNodeFromBackend[]) => void;
 
   addSkill: (
@@ -40,7 +42,7 @@ type SkillStore = {
   fetchSkills: (getToken: () => Promise<string>) => Promise<void>;
 };
 
-// 🔁 DRY helper
+// Helper to map backend skill to frontend skill
 const formatSkill = (s: SkillNodeFromBackend): SkillNode => ({
   id: s._id,
   name: s.skillName,
@@ -50,6 +52,7 @@ const formatSkill = (s: SkillNodeFromBackend): SkillNode => ({
 
 export const useSkills = create<SkillStore>((set) => ({
   skills: [],
+  isLoading: false,
 
   setSkills: (skillsFromBackend) =>
     set({
@@ -154,46 +157,44 @@ export const useSkills = create<SkillStore>((set) => ({
     }
   },
 
-fetchSkills: async (getToken: () => Promise<string>): Promise<void> => {
-  try {
-    const token = await getToken();
+  fetchSkills: async (getToken: () => Promise<string>): Promise<void> => {
+    set({ isLoading: true }); // start loading
+    try {
+      const token = await getToken();
 
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const userId = payload.sub;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const userId = payload.sub;
 
-    const res = await fetch(`${FULL_API_URL}/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const res = await fetch(`${FULL_API_URL}/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Failed to fetch skills: ${res.status} ${errorText}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch skills: ${res.status} ${errorText}`);
+      }
+
+      const skillsFromBackend: SkillNodeFromBackend[] = await res.json();
+
+      set({
+        skills: skillsFromBackend.map((s) => ({
+          ...formatSkill(s),
+          category: s.category.toLowerCase() as SkillCategory,
+        })),
+      });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (
+        error.error === "login_required" ||
+        (error.message && error.message.toLowerCase().includes("login required"))
+      ) {
+        set({ skills: [] });
+        return;
+      }
+      console.error("fetchSkills error:", error);
+      throw error;
+    } finally {
+      set({ isLoading: false }); // done loading
     }
-
-    const skillsFromBackend: SkillNodeFromBackend[] = await res.json();
-
-    set({
-      skills: skillsFromBackend.map((s) => ({
-        ...formatSkill(s),
-        category: s.category.toLowerCase() as SkillCategory,
-      })),
-    });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    // Only suppress "login required" errors
-    if (
-      error.error === "login_required" || // Auth0 error shape sometimes
-      (error.message && error.message.toLowerCase().includes("login required"))
-    ) {
-      // User not logged in, clear skills or do nothing
-      set({ skills: [] });
-
-      return;
-    }
-    
-    console.error("fetchSkills error:", error);
-    throw error; // rethrow others
-  }
-},
-
+  },
 }));
