@@ -6,15 +6,17 @@ import { auth } from 'express-oauth2-jwt-bearer' // <-- import auth middleware
 
 import skillRoutes from './routes/skills.js'
 
-dotenv.config()
+dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development',
+})
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
 // Auth0 JWT middleware setup
 const jwtCheck = auth({
-  audience: 'https://api.stackmap.dev', // <-- your API identifier
-  issuerBaseURL: 'https://piwakawaka2022-ngahine.au.auth0.com/', // <-- your Auth0 domain with trailing slash
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: process.env.AUTH0_DOMAIN,
   tokenSigningAlg: 'RS256',
 })
 
