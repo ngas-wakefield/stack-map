@@ -6,6 +6,7 @@ import { SkillList } from "./components/SkillList";
 import { SkillMap } from "./components/SkillMap";
 import AuthButtons from "./components/AuthButtons";
 import { useAuth0 } from "@auth0/auth0-react";
+import TestButton from './components/tests/TestButton';
 
 export function App() {
   const { user, isAuthenticated } = useAuth0();
@@ -14,6 +15,7 @@ export function App() {
       <Navbar bg="dark" variant="dark" className="mb-4">
         <Container className="d-flex justify-content-between align-items-center">
           <Navbar.Brand>🗺️ Stack Map</Navbar.Brand>
+          <TestButton/>
 
           <div className="d-flex align-items-center gap-3">
             {isAuthenticated && user && user.picture && user.name && (
