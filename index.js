@@ -7,7 +7,16 @@ import { auth } from 'express-oauth2-jwt-bearer' // <-- import auth middleware
 import skillRoutes from './routes/skills.js'
 
 dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development',
+  path: {
+    production: '.env.production',
+    development: '.env.development',
+  }[process.env.NODE_ENV || 'development'], // fallback to dev
+})
+
+console.log('Auth0 config:', {
+  audience: process.env.AUTH0_AUDIENCE,
+  domain: process.env.AUTH0_DOMAIN,
+  mongo: process.env.MONGODB_URI,
 })
 
 const app = express()

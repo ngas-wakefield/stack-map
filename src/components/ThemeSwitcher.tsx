@@ -4,7 +4,7 @@ import { Dropdown, ButtonGroup, DropdownButton } from 'react-bootstrap';
 const themes = ['Light', 'Dark', 'Galaxy'];
 
 export function ThemeSwitcher() {
-  const [theme, setTheme] = React.useState('Galaxy');
+  const [theme, setTheme] = React.useState('Light');
 
   const applyTheme = (themeName: string) => {
     // For MVP, simple background color change:
