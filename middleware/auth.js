@@ -6,8 +6,8 @@ export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`, // ✅ Correct
+    jwksRequestsPerMinute: 10,
+    jwksUri: `${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
   }),
   audience: process.env.AUTH0_AUDIENCE,
   issuer: process.env.AUTH0_DOMAIN,

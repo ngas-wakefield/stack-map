@@ -7,10 +7,10 @@ import { auth } from 'express-oauth2-jwt-bearer' // <-- import auth middleware
 import skillRoutes from './routes/skills.js'
 
 dotenv.config({
-  path: {
-    production: '.env.production',
-    development: '.env.development',
-  }[process.env.NODE_ENV || 'development'], // fallback to dev
+  path:
+    process.env.NODE_ENV === 'production'
+      ? '.env.production'
+      : '.env.development',
 })
 
 const app = express()
@@ -18,15 +18,15 @@ const PORT = process.env.PORT || 3000
 
 // Auth0 JWT middleware setup
 const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE, // "https://api.stackmap.dev"
-  issuerBaseURL: process.env.AUTH0_DOMAIN + '/', // Make sure trailing slash included!
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: process.env.AUTH0_DOMAIN,
   tokenSigningAlg: 'RS256',
 })
 
 app.use(cors())
 app.use(express.json())
 
-app.use(jwtCheck) // <-- Protect all routes below with Auth0 JWT
+app.use(jwtCheck)
 
 app.use('/api/skills', skillRoutes)
 
