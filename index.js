@@ -13,19 +13,13 @@ dotenv.config({
   }[process.env.NODE_ENV || 'development'], // fallback to dev
 })
 
-console.log('Auth0 config:', {
-  audience: process.env.AUTH0_AUDIENCE,
-  domain: process.env.AUTH0_DOMAIN,
-  mongo: process.env.MONGODB_URI,
-})
-
 const app = express()
 const PORT = process.env.PORT || 3000
 
 // Auth0 JWT middleware setup
 const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: process.env.AUTH0_DOMAIN,
+  audience: process.env.AUTH0_AUDIENCE, // "https://api.stackmap.dev"
+  issuerBaseURL: process.env.AUTH0_DOMAIN + '/', // Make sure trailing slash included!
   tokenSigningAlg: 'RS256',
 })
 

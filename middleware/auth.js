@@ -13,11 +13,7 @@ export const checkJwt = jwt({
   issuer: process.env.AUTH0_DOMAIN,
   algorithms: ['RS256'],
 })
-console.log('Auth0 config:', {
-  audience: process.env.AUTH0_AUDIENCE,
-  domain: process.env.AUTH0_DOMAIN,
-  mongo: process.env.MONGODB_URI,
-})
+
 // Middleware to check if required scopes exist in token
 export function checkScopes(requiredScopes) {
   return (req, res, next) => {
