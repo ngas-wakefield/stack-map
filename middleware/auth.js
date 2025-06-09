@@ -7,13 +7,17 @@ export const checkJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `${process.env.AUTH0_DOMAIN}.well-known/jwks.json`,
+    jwksUri: `${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`, // ✅ Correct
   }),
   audience: process.env.AUTH0_AUDIENCE,
   issuer: process.env.AUTH0_DOMAIN,
   algorithms: ['RS256'],
 })
-
+console.log('Auth0 config:', {
+  audience: process.env.AUTH0_AUDIENCE,
+  domain: process.env.AUTH0_DOMAIN,
+  mongo: process.env.MONGODB_URI,
+})
 // Middleware to check if required scopes exist in token
 export function checkScopes(requiredScopes) {
   return (req, res, next) => {
