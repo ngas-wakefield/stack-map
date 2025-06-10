@@ -18,7 +18,6 @@ router.get(
       const skills = await Skill.find({ userId: req.params.userId })
       res.json(skills)
     } catch (err) {
-      console.error('Error fetching skills:', err)
       res.status(500).json({ message: err.message })
     }
   }

@@ -6,11 +6,12 @@ export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
-    jwksRequestsPerMinute: 10,
-    jwksUri: `${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+    jwksRequestsPerMinute: 5,
+    jwksUri:
+      'https://piwakawaka2022-ngahine.au.auth0.com/.well-known/jwks.json',
   }),
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: process.env.AUTH0_DOMAIN,
+  audience: 'https://api.stackmap.dev',
+  issuer: 'https://piwakawaka2022-ngahine.au.auth0.com/',
   algorithms: ['RS256'],
 })
 
