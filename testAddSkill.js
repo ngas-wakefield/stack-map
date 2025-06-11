@@ -1,21 +1,17 @@
 import fetch from 'node-fetch'
 
 async function getToken() {
-  const res = await fetch(
-    'https://piwakawaka2022-ngahine.au.auth0.com/oauth/token',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: 'swrWBEIWrhQr21vFAJveLbQ88Hkjt7zF',
-        client_secret:
-          'KJk4NmkFLK7BqjfmaNdx13KWPsd1NM8kDbswdB_mAHjv7HVz9bV26UdWX6tth2CE',
-        audience: 'https://api.stackmap.dev',
-        grant_type: 'client_credentials',
-        scope: 'write:skills',
-      }),
-    }
-  )
+  const res = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
+      audience: process.env.AUTH0_AUDIENCE,
+      grant_type: 'client_credentials',
+      scope: 'write:skills',
+    }),
+  })
 
   const { access_token } = await res.json()
   return access_token

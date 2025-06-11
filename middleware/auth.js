@@ -1,4 +1,3 @@
-// checkJwt.js (your current file)
 import { expressjwt as jwt } from 'express-jwt'
 import jwksRsa from 'jwks-rsa'
 
@@ -7,11 +6,10 @@ export const checkJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri:
-      'https://piwakawaka2022-ngahine.au.auth0.com/.well-known/jwks.json',
+    jwksUri: `${process.env.AUTH0_DOMAIN}.well-known/jwks.json`,
   }),
-  audience: 'https://api.stackmap.dev',
-  issuer: 'https://piwakawaka2022-ngahine.au.auth0.com/',
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: process.env.AUTH0_DOMAIN,
   algorithms: ['RS256'],
 })
 

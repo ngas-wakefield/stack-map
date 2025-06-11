@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { FULL_API_URL } from "../config";
+import { FULL_API_URL } from "../../utils/config";
 
 export type SkillCategory = "frontend" | "backend" | "tooling" | "devops";
 

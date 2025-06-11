@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { FULL_API_URL } from '../../config';
+import { FULL_API_URL } from '../../../utils/config';
 
 export default function SkillDeleteTest() {
   const { getAccessTokenSilently } = useAuth0();
